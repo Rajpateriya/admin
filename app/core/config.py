@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     MONGODB_MIN_POOL_SIZE: int = 10
     MONGODB_MAX_POOL_SIZE: int = 100
     MONGODB_MAX_IDLE_TIME_MS: int = 45000
+    MONGODB_FALLBACK_TO_MEMORY: bool = True
 
     # Initial SuperAdmin Seed
     SUPERADMIN_EMAIL: str = "superadmin@ecommerce.com"

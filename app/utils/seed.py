@@ -18,7 +18,7 @@ logger = logging.getLogger("uvicorn.error")
 
 
 async def seed_initial_superadmin(db: AsyncIOMotorDatabase):
-    """Ensure the root SuperAdmin exists on initial startup."""
+    """Ensure the root SuperAdmin and demo staff accounts exist on initial startup."""
     admin_repo = AdminRepository(db)
     existing = await admin_repo.get_by_email(settings.SUPERADMIN_EMAIL)
     if not existing:
@@ -36,6 +36,36 @@ async def seed_initial_superadmin(db: AsyncIOMotorDatabase):
         logger.info("Root SuperAdmin seeded successfully.")
     else:
         logger.info("SuperAdmin already exists.")
+
+    # Seed demo Catalog Manager account
+    existing_catalog = await admin_repo.get_by_email("catalog@ecommerce.com")
+    if not existing_catalog:
+        logger.info("Seeding demo Catalog Manager account: catalog@ecommerce.com...")
+        cat_admin = Admin(
+            email="catalog@ecommerce.com",
+            hashed_password=hash_password("CatalogManager@2026!"),
+            full_name="Catalog Manager",
+            role=AdminRole.CATALOG_MANAGER,
+            status=AdminStatus.ACTIVE,
+            is_superadmin=False,
+            custom_permissions=[],
+        )
+        await admin_repo.create(cat_admin)
+
+    # Seed demo Order Manager account
+    existing_orders = await admin_repo.get_by_email("orders@ecommerce.com")
+    if not existing_orders:
+        logger.info("Seeding demo Order Manager account: orders@ecommerce.com...")
+        order_admin = Admin(
+            email="orders@ecommerce.com",
+            hashed_password=hash_password("OrderManager@2026!"),
+            full_name="Order Manager",
+            role=AdminRole.ORDER_MANAGER,
+            status=AdminStatus.ACTIVE,
+            is_superadmin=False,
+            custom_permissions=[],
+        )
+        await admin_repo.create(order_admin)
 
 
 async def seed_demo_store_data(db: AsyncIOMotorDatabase):
